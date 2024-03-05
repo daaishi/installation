@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:installation/event_view.dart';
 import 'package:installation/file_manager.dart';
 import 'package:installation/startup_view.dart';
 import 'package:installation/app_data.dart';
@@ -38,7 +39,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
-        length: 4,
+        length: 3,
         child: Scaffold(
           appBar: AppBar(
             title: const Text('Installation'),
@@ -49,8 +50,6 @@ class MainApp extends StatelessWidget {
                 Tab(icon: Icon(Icons.rocket), text: 'Startup'),
                 // event
                 Tab(icon: Icon(Icons.event), text: 'Event'),
-                // system
-                Tab(icon: Icon(Icons.settings), text: 'System'),
               ],
             ),
             actions: [
@@ -71,8 +70,7 @@ class MainApp extends StatelessWidget {
             children: [
               HomeView(),
               StartupView(),
-              Icon(Icons.directions_bike),
-              SystemView(),
+              EventView(),
             ],
           ),
         )

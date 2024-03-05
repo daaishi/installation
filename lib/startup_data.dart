@@ -14,7 +14,7 @@ class StartupData {
   factory StartupData.fromJson(Map<String, dynamic> json) => StartupData(
     type: json['type'],
     command: json['command'],
-    duration: json['duration'],
+    duration: json['duration'] ?? 0,
   );
 }
 
