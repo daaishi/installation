@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:installation/app_data.dart';
 import 'package:process_run/shell.dart';
+import 'package:provider/provider.dart';
 import 'startup_data.dart';
 import 'pj_link_service.dart';
 import 'add_startup_data_dialog.dart';
@@ -13,13 +15,21 @@ class StartupView extends StatefulWidget {
 
 class _StartupViewState extends State<StartupView> {
 
-  final List<StartupData> startupData = [
-    StartupData(type: 'app', command: 'C:\\Windows\\notepad.exe', duration: 5),
-    StartupData(type: 'pjlink', command: '192.168.100.100:4352 off', duration: 0),
-  ];
+  // final List<StartupData> startupData = [
+  //   StartupData(type: 'app', command: 'C:\\Windows\\notepad.exe', duration: 5),
+  //   StartupData(type: 'pjlink', command: '192.168.100.100:4352 off', duration: 0),
+  // ];
+
 
   @override
   Widget build(BuildContext context) {
+
+    // AppData appData = Provider.of<AppData>(context);
+    // appData.startupDataList = [
+    //   StartupData(type: 'app', command: 'C:\\Windows\\notepad.exe', duration: 5),
+    //   StartupData(type: 'pjlink', command: '192.168.100.100:4352 off', duration: 0),
+    // ];
+
     return Scaffold(
       body: Column(
         children: [
@@ -37,7 +47,8 @@ class _StartupViewState extends State<StartupView> {
   }
 
   void _executeCommands() {
-    for (var data in startupData) {
+    AppData appData = Provider.of<AppData>(context);
+    for (var data in appData.startupDataList) {
       Future.delayed(Duration(seconds: data.duration), (){
         if (data.type == 'pjlink') {
           var pjLinkService = PJLinkService(commandString: data.command);
@@ -69,12 +80,11 @@ class _StartupViewState extends State<StartupView> {
   }
 
   void _showAddStartupDataDialog(BuildContext context) {
+    AppData appData = Provider.of<AppData>(context, listen: false);
     showDialog(context: context, builder: (BuildContext dialogContext) {
       return AddStartupDataDialog(
         onAdd: (StartupData data) {
-          setState(() {
-            startupData.add(data);
-          });
+          appData.addStartupData(data);
         },
       );
     });
@@ -82,13 +92,16 @@ class _StartupViewState extends State<StartupView> {
 
   Widget _buildSimulationButton() {
     return ElevatedButton(
-      onPressed: _executeCommands,
+      onPressed: () => _executeCommands(),
       child: Icon(Icons.play_arrow),
     );
   }
 
   Widget _buildDataTable()
   {
+
+    AppData appData = Provider.of<AppData>(context);
+
     return DataTable(
       columns: [
         DataColumn(label: Text('Type')),
@@ -96,7 +109,7 @@ class _StartupViewState extends State<StartupView> {
         DataColumn(label: Text('Duration')),
         DataColumn(label: Text('Actions')),
       ],
-      rows: startupData.map((data) => DataRow(cells: [
+      rows: appData.startupDataList.map((data) => DataRow(cells: [
         DataCell(Text(data.type)),
         DataCell(Text(data.command)),
         DataCell(Text(data.duration.toString())),
@@ -107,9 +120,7 @@ class _StartupViewState extends State<StartupView> {
             icon: Icon(Icons.delete),
             onPressed: () {
               // ここに削除のロジックを追加
-              setState(() {
-                startupData.remove(data);
-              });
+              appData.removeStartupData(data);
             },
           ),
           IconButton(
