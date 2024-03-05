@@ -19,8 +19,10 @@ class _AddEventDataDialogState extends State<AddEventDataDialog> {
   final TextEditingController commandController = TextEditingController();
   final TextEditingController ipAddressController = TextEditingController(text: "192.168.100.100");
   final TextEditingController portController = TextEditingController(text: "4352");
+  final TextEditingController oscAddressController = TextEditingController(text: "/quit");
+  final TextEditingController oscArgumentController = TextEditingController(text: "1");
 
-  String? selectedType = 'app'; // app, system, pjlink
+  String? selectedType = 'app'; // app, system, pjlink, osc
   String? selectedPjLinkCommand = 'on'; // on, off
   String? selectedAppCommand = 'close'; // close, kill
   String? selectedSystemCommand = 'restart'; // restart, shutdown
@@ -45,7 +47,7 @@ class _AddEventDataDialogState extends State<AddEventDataDialog> {
       children: [
         TextField(
           controller: commandController,
-          decoration: InputDecoration(labelText: 'Command'),
+          decoration: InputDecoration(labelText: 'File(only .exe)'),
           onTap: _pickFile,
           readOnly: true, // ファイルピッカーを使用するため、直接編集は不可
         ),
@@ -119,6 +121,39 @@ class _AddEventDataDialogState extends State<AddEventDataDialog> {
         ),
       ],
     );
+  } else if (selectedType == 'osc') {
+    return Column(
+      children: [
+        TextField(
+          decoration: InputDecoration(labelText: 'IP Address'),
+          controller: ipAddressController,
+          keyboardType: TextInputType.text,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d{0,3}(\.\d{0,3}){0,3}$')),
+          ],
+        ),
+        TextField(
+          decoration: InputDecoration(labelText: 'Port'),
+          keyboardType: TextInputType.number,
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.digitsOnly,
+          ],
+          controller: portController,
+        ),
+        TextField(
+          decoration: InputDecoration(labelText: 'OSC Address'),
+          controller: oscAddressController,
+          keyboardType: TextInputType.text,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^/[a-zA-Z0-9/_-]*$')),
+          ],
+        ),
+        TextField(
+          decoration: InputDecoration(labelText: 'OSC Argument'),
+          controller: oscArgumentController,
+        ),
+      ],
+    );
   } else {
     // その他のtypeが追加された場合のためのデフォルト
     return Container();
@@ -135,7 +170,7 @@ class _AddEventDataDialogState extends State<AddEventDataDialog> {
           children: [
             DropdownButton<String>(
               value: selectedType,
-              items: ['app', 'system', 'pjlink'].map((String value) {
+              items: ['app', 'system', 'pjlink', 'osc'].map((String value) {
                 return DropdownMenuItem<String>(
                   child: Text(value),
                   value: value,
@@ -176,8 +211,15 @@ class _AddEventDataDialogState extends State<AddEventDataDialog> {
               }
               else if (selectedType == 'app') {
                 commandController.text = "-path ${commandController.text} -arg ${selectedAppCommand}";
-                print(commandController.text);
               }
+              else if (selectedType == 'osc') {
+                commandController.text = "${ipAddressController.text}:${portController.text} ${oscAddressController.text} -args ${oscArgumentController.text}";
+              }
+
+              if (commandController.text.isEmpty) {
+                return;
+              }
+
               final EventData data = EventData(
                 type: selectedType!,
                 command: commandController.text,

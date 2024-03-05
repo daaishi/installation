@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:installation/add_event_data_dialog.dart';
 import 'package:installation/app_data.dart';
 import 'package:installation/event_data.dart';
+import 'package:installation/system/osc_service.dart';
 import 'package:installation/windows_service.dart';
 import 'package:intl/intl.dart';
-import 'package:process_run/shell.dart';
 import 'package:provider/provider.dart';
-import 'startup_data.dart';
 import 'pj_link_service.dart';
-import 'add_startup_data_dialog.dart';
 
 
 class EventView extends StatefulWidget {
@@ -44,15 +42,12 @@ class _EventViewState extends State<EventView> {
     } else if (data.type == 'system') {
     } else if (data.type == 'app') {
       WindowsService.appControl(data.command);
-      // try {
-      //   var shell = Shell();
-      //   await shell.run('''
-      //     cmd /c start "" "${data.command}"
-      //   ''');
-      // }
-      // catch (e) {
-      //   print(e);
-      // }
+    } else if (data.type == 'osc') {
+      try {
+        OSCService.sendMessage(data.command);
+      } catch (e) {
+        print(e);
+      }
     }
   }
 

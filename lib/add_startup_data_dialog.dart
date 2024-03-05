@@ -40,12 +40,11 @@ class _AddStartupDataDialogState extends State<AddStartupDataDialog> {
     // 'app'の場合、ファイルピッカーを表示
     return TextField(
       controller: commandController,
-      decoration: InputDecoration(labelText: 'Command'),
+      decoration: InputDecoration(labelText: 'File'),
       onTap: _pickFile,
-      readOnly: true, // ファイルピッカーを使用するため、直接編集は不可
+      readOnly: true,
     );
   } else if (selectedType == 'pjlink') {
-    // 'pjlink'の場合、IPアドレス、ポート、コマンド(on/off)を入力
     return Column(
       children: [
         TextField(
@@ -65,7 +64,7 @@ class _AddStartupDataDialogState extends State<AddStartupDataDialog> {
           controller: portController,
         ),
         DropdownButton<String>(
-          value: selectedPjLinkCommand, // コマンド用のコントローラーを流用
+          value: selectedPjLinkCommand, 
           items: ['on', 'off'].map((String value) {
             return DropdownMenuItem<String>(
               value: value,
@@ -113,7 +112,7 @@ class _AddStartupDataDialogState extends State<AddStartupDataDialog> {
             _buildCommandInput(),
             TextField(
               controller: durationController,
-              decoration: InputDecoration(labelText: 'Duration'),
+              decoration: InputDecoration(labelText: 'Duration(sec)'),
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [FilteringTextInputFormatter.digitsOnly]
             ),
@@ -127,6 +126,9 @@ class _AddStartupDataDialogState extends State<AddStartupDataDialog> {
         ),
         TextButton(
           onPressed: () {
+            if (commandController.text.isEmpty) {
+              return;
+            }
             if (selectedType != null && durationController.text.isNotEmpty) {
               final int? duration = int.tryParse(durationController.text);
               if (duration != null) {
