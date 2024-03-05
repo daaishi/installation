@@ -1,10 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:installation/event_view.dart';
 import 'package:installation/file_manager.dart';
+import 'package:installation/pj_link_service.dart';
 import 'package:installation/startup_view.dart';
 import 'package:installation/app_data.dart';
+import 'package:process_run/shell.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_view.dart';
 
 
@@ -13,6 +17,12 @@ void main() async{
   FileManager fileManager = FileManager();
 
   AppData appData = await loadAppData(fileManager);
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isStartupEnabled = prefs.getBool('isStartupEnabled') ?? false;
+  if (isStartupEnabled) {
+    executeStartupCommands(appData);
+  }
 
   runApp(
     ChangeNotifierProvider<AppData>(
@@ -26,6 +36,30 @@ Future<AppData> loadAppData(FileManager fileManager) async {
   String dataJson = await fileManager.readData();
   Map<String, dynamic> jsonData = json.decode(dataJson);
   return AppData.fromJson(jsonData);
+}
+
+void executeStartupCommands(AppData appData) async {
+  for (var data in appData.startupDataList) {
+    print(data.command);
+    Future.delayed(Duration(seconds: data.duration), () async {
+      if (data.type == 'pjlink') {
+        var pjLinkService = PJLinkService(commandString: data.command);
+        pjLinkService.executeCommand();
+      } else if (data.type == 'app') {
+        try {
+          var shell = Shell();
+          await shell.run(
+            '''
+              cmd /c start "" "${data.command}"
+            '''
+          );
+        }
+        catch (e) {
+          print(e);
+        }
+      }
+    });
+  }
 }
 
 
