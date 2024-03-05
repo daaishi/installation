@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:path/path.dart' as pathLib;
+import 'package:process_run/shell.dart';
 
 class WindowsService {
 
@@ -27,6 +28,7 @@ class WindowsService {
 
 
     String? processName = pathLib.basenameWithoutExtension(path ?? "");
+    String? exeName = pathLib.basename(path ?? "");
 
     if (arg == 'close') {
       // PowerShellスクリプトのパス
@@ -42,7 +44,17 @@ class WindowsService {
       }
     }
     else if (arg == 'kill') {
-
+      var shell = Shell();
+      try {
+        await shell.run(
+          '''
+          taskkill /im $exeName
+          '''
+        );
+      }
+      catch (e) {
+        print(e);
+      }
     }
 
   }
