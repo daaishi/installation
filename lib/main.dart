@@ -6,7 +6,6 @@ import 'package:installation/startup_view.dart';
 import 'package:installation/app_data.dart';
 import 'package:provider/provider.dart';
 import 'home_view.dart';
-import 'system_view.dart';
 
 
 void main() async{
@@ -20,7 +19,6 @@ void main() async{
       create: (context) => appData,
       child: MainApp(),
     ),
-    // Provider<AppData>.value(value: appData, child: MainApp(),),
   );
 }
 

@@ -15,20 +15,8 @@ class StartupView extends StatefulWidget {
 
 class _StartupViewState extends State<StartupView> {
 
-  // final List<StartupData> startupData = [
-  //   StartupData(type: 'app', command: 'C:\\Windows\\notepad.exe', duration: 5),
-  //   StartupData(type: 'pjlink', command: '192.168.100.100:4352 off', duration: 0),
-  // ];
-
-
   @override
   Widget build(BuildContext context) {
-
-    // AppData appData = Provider.of<AppData>(context);
-    // appData.startupDataList = [
-    //   StartupData(type: 'app', command: 'C:\\Windows\\notepad.exe', duration: 5),
-    //   StartupData(type: 'pjlink', command: '192.168.100.100:4352 off', duration: 0),
-    // ];
 
     return Scaffold(
       body: Column(
@@ -66,12 +54,13 @@ class _StartupViewState extends State<StartupView> {
       var pjLinkService = PJLinkService(commandString: data.command);
       pjLinkService.executeCommand();
     } else if (data.type == 'app') {
-      // Process.run(data.command, []);
       try {
         var shell = Shell();
-        await shell.run('''
-          cmd /c start "" "${data.command}"
-        ''');
+        await shell.run(
+          '''
+            cmd /c start "" "${data.command}"
+          '''
+        );
       }
       catch (e) {
         print(e);
@@ -119,14 +108,12 @@ class _StartupViewState extends State<StartupView> {
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
-              // ここに削除のロジックを追加
               appData.removeStartupData(data);
             },
           ),
           IconButton(
             icon: Icon(Icons.play_arrow),
             onPressed: () {
-              // ここに実行のロジックを追加
               _executeCommand(data);
             },
           ),
