@@ -21,21 +21,36 @@ class _StartupViewState extends State<StartupView> {
     return Scaffold(
       body: Column(
         children: [
-          _buildSimulationButton(),
           _buildDataTable(),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showAddStartupDataDialog(context);
-        },
-        child: Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            child: const Icon(
+              Icons.rocket_launch,
+            ),
+            onPressed: () {
+              _executeCommands();
+            },
+          ),
+          SizedBox(height: 16),
+          FloatingActionButton(
+            child: const Icon(
+              Icons.add,
+            ),
+            onPressed: () {
+              _showAddStartupDataDialog(context);
+            },
+          ),
+        ],
       ),
     );
   }
 
   void _executeCommands() {
-    AppData appData = Provider.of<AppData>(context);
+    AppData appData = Provider.of<AppData>(context, listen: false);
     for (var data in appData.startupDataList) {
       Future.delayed(Duration(seconds: data.duration), (){
         if (data.type == 'pjlink') {
@@ -77,13 +92,6 @@ class _StartupViewState extends State<StartupView> {
         },
       );
     });
-  }
-
-  Widget _buildSimulationButton() {
-    return ElevatedButton(
-      onPressed: () => _executeCommands(),
-      child: Icon(Icons.play_arrow),
-    );
   }
 
   Widget _buildDataTable()
