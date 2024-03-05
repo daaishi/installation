@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:installation/startup_view.dart';
 import 'home_view.dart';
 import 'system_view.dart';
 
-void main() {
+void main() async{
   runApp(const MainApp());
 }
 
@@ -32,7 +33,7 @@ class MainApp extends StatelessWidget {
           body: TabBarView(
             children: [
               HomeView(),
-              Icon(Icons.directions_transit),
+              StartupView(),
               Icon(Icons.directions_bike),
               SystemView(),
             ],
