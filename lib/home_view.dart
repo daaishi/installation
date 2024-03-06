@@ -18,6 +18,7 @@ class _HomeViewState extends State<HomeView> {
   bool isStartupEnabled = false;
   bool isEventEnabled = false;
 
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +45,7 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
 
     AppData appData = Provider.of<AppData>(context);
+
 
     return Scaffold(
       body: Center(

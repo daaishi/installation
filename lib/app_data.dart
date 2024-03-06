@@ -4,7 +4,9 @@ import 'package:installation/event_data.dart';
 import 'package:installation/startup_data.dart';
 import 'package:logger/logger.dart';
 
-final logger = Logger();
+final logger = Logger(
+  output: ConsoleOutput()
+  );
 
 class AppData extends ChangeNotifier {
   List<StartupData> startupDataList = [];
