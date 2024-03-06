@@ -1,9 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:installation/app_data.dart';
-import 'package:installation/pj_link_service.dart';
-import 'package:installation/startup_data.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -43,8 +42,13 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+
+    AppData appData = Provider.of<AppData>(context);
+
     return Scaffold(
       body: Center(
+        child:SizedBox(
+          width: 320,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -74,11 +78,17 @@ class _HomeViewState extends State<HomeView> {
                 setState(() {
                   isEventEnabled = value;
                 });
+                if (value) {
+                  appData.startTimer();
+                } else {
+                  appData.stopTimer();
+                }
                 savePreferences();
               },
             ),
           ],
         ),
+      ),
       ),
     );
   }

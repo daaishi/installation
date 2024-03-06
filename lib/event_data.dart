@@ -2,11 +2,13 @@ class EventData {
   final String type;
   final String command;
   final DateTime time; // DateTime型を使用して秒も含めた時刻を管理
+  DateTime? lastExecuted;
 
   EventData({
     required this.type,
     required this.command,
     required this.time,
+    this.lastExecuted
   });
 
   Map<String, dynamic> toJson() => {
@@ -19,7 +21,7 @@ class EventData {
   factory EventData.fromJson(Map<String, dynamic> json) => EventData(
     type: json['type'],
     command: json['command'],
-    // 文字列からDateTimeオブジェクトを生成
     time: DateTime.parse(json['time']),
+    lastExecuted: DateTime.now(),
   );
 }

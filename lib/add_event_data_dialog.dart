@@ -28,6 +28,12 @@ class _AddEventDataDialogState extends State<AddEventDataDialog> {
   String? selectedSystemCommand = 'restart'; // restart, shutdown
   String _time = '23:59:59';
 
+  @override
+  initState() {
+    super.initState();
+    _time = DateTime.now().toLocal().toString().substring(11, 19);
+  }
+
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['exe']);
     if (result != null) {
@@ -185,10 +191,11 @@ class _AddEventDataDialogState extends State<AddEventDataDialog> {
             ),
             _buildCommandInput(),
             CustomTimeInput(onTimeChanged: (time) {
-              setState(() {
-                _time = time;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _time = time;
+                });
               });
-              print("Selected time: $_time");
             }),
           ],
         ),

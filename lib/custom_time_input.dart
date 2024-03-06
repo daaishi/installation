@@ -11,9 +11,19 @@ class CustomTimeInput extends StatefulWidget {
 }
 
 class _CustomTimeInputState extends State<CustomTimeInput> {
-  final TextEditingController _hourController = TextEditingController(text: "23");
-  final TextEditingController _minuteController = TextEditingController(text: "59");
-  final TextEditingController _secondController = TextEditingController(text: "59");
+  final TextEditingController _hourController = TextEditingController();
+  final TextEditingController _minuteController = TextEditingController();
+  final TextEditingController _secondController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _hourController.text = now.hour.toString().padLeft(2, '0');
+    _minuteController.text = now.minute.toString().padLeft(2, '0');
+    _secondController.text = now.second.toString().padLeft(2, '0');
+    _updateTime();
+  }
 
   @override
   void dispose() {

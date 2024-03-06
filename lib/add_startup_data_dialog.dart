@@ -126,14 +126,14 @@ class _AddStartupDataDialogState extends State<AddStartupDataDialog> {
         ),
         TextButton(
           onPressed: () {
-            if (commandController.text.isEmpty) {
-              return;
-            }
             if (selectedType != null && durationController.text.isNotEmpty) {
               final int? duration = int.tryParse(durationController.text);
               if (duration != null) {
                 if (selectedType == 'pjlink') {
                   commandController.text = "${ipAddressController.text}:${portController.text} ${selectedPjLinkCommand}";
+                }
+                if (commandController.text.isEmpty) {
+                  return;
                 }
                 final StartupData data = StartupData(
                   type: selectedType!,

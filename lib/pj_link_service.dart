@@ -1,5 +1,8 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:logger/logger.dart';
+
+final logger = Logger();
 
 class PJLinkService {
   final String ipAddress;
@@ -26,33 +29,44 @@ class PJLinkService {
 
   Future<void> turnOffProjector() async {
     String command = '%1POWR 0\r';
+      try {
+        var socket = await Socket.connect(ipAddress, port);
+        print('Turn off projector : ${socket.remoteAddress.address}:${socket.remotePort}');
+        socket.write(command);
+        await socket.flush();
+        socket.listen((event) {
+          print(event);
+        }, onDone: () {
+          print('Disconnected from : ${socket.remoteAddress.address}:${socket.remotePort}');
+          socket.destroy();
+        });
 
-    var socket = await Socket.connect(ipAddress, port);
-    print('Turn off projector : ${socket.remoteAddress.address}:${socket.remotePort}');
-    socket.write(command);
-    await socket.flush();
-    socket.listen((event) {
-      print(event);
-    }, onDone: () {
-      print('Disconnected from : ${socket.remoteAddress.address}:${socket.remotePort}');
-      socket.destroy();
-    });
-  }
+      }
+      catch (e) {
+        logger.w('Error: $e');
+      }
+    }
 
   // Projector power on
   Future<void> turnOnProjector() async {
     String command = '%1POWR 1\r';
 
-    var socket = await Socket.connect(ipAddress, port);
-    print('Turn on projector: ${socket.remoteAddress.address}:${socket.remotePort}');
-    socket.write(command);
-    await socket.flush();
-    socket.listen((event) {
-      print(event);
-    }, onDone: () {
-      print('Disconnected from : ${socket.remoteAddress.address}:${socket.remotePort}');
-      socket.destroy();
-    });
+    try {
+      var socket = await Socket.connect(ipAddress, port);
+      print('Turn on projector: ${socket.remoteAddress.address}:${socket.remotePort}');
+      socket.write(command);
+      await socket.flush();
+      socket.listen((event) {
+        print(event);
+      }, onDone: () {
+        print('Disconnected from : ${socket.remoteAddress.address}:${socket.remotePort}');
+        socket.destroy();
+      });
+    }
+    catch (e) {
+      print(e);
+    }
+
   }
 }
 
