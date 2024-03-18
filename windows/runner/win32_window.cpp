@@ -5,6 +5,8 @@
 
 #include "resource.h"
 
+HANDLE Win32Window::mutex_handle_ = nullptr;
+
 namespace {
 
 /// Window attribute that enables dark mode window decorations.
@@ -113,10 +115,21 @@ void WindowClassRegistrar::UnregisterWindowClass() {
 
 Win32Window::Win32Window() {
   ++g_active_window_count;
+  mutex_handle_ = CreateMutex(nullptr, TRUE, L"InstallationMutex");
+  if (GetLastError() == ERROR_ALREADY_EXISTS) {
+    MessageBox(nullptr, L"Another instance of the application is already running",
+               L"Installation", MB_OK | MB_ICONINFORMATION);
+    exit(1);
+  }
 }
 
 Win32Window::~Win32Window() {
   --g_active_window_count;
+  if (mutex_handle_ != nullptr) {
+    ReleaseMutex(mutex_handle_);
+    CloseHandle(mutex_handle_);
+    mutex_handle_ = nullptr;
+  }
   Destroy();
 }
 
@@ -216,6 +229,15 @@ Win32Window::MessageHandler(HWND hwnd,
     case WM_DWMCOLORIZATIONCOLORCHANGED:
       UpdateTheme(hwnd);
       return 0;
+    
+    case WM_SYSCOMMAND:
+      if (wparam == SC_MINIMIZE) {
+        SetWindowPos(
+          hwnd, nullptr, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_HIDEWINDOW
+        );
+        return 0;
+      }
+      break;
   }
 
   return DefWindowProc(window_handle_, message, wparam, lparam);
@@ -265,6 +287,8 @@ void Win32Window::SetQuitOnClose(bool quit_on_close) {
 
 bool Win32Window::OnCreate() {
   // No-op; provided for subclasses.
+  HMENU hMenu = GetSystemMenu(GetHandle(), 0);
+  RemoveMenu(hMenu, SC_CLOSE, MF_BYCOMMAND);
   return true;
 }
 
