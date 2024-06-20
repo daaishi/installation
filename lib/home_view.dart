@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 // display current time and date for tab 1
 class HomeView extends StatefulWidget {
@@ -17,12 +18,14 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   bool isStartupEnabled = false;
   bool isEventEnabled = false;
-
+  String _version = '';
+  String _buildNumber = '';
 
   @override
   void initState() {
     super.initState();
     loadPreferences();
+    _getPackageInfo();
   }
 
   void loadPreferences() async {
@@ -39,58 +42,72 @@ class _HomeViewState extends State<HomeView> {
     prefs.setBool('isEventEnabled', isEventEnabled);
   }
 
-
+  Future<void> _getPackageInfo() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _version = packageInfo.version;
+      _buildNumber = packageInfo.buildNumber;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-
     AppData appData = Provider.of<AppData>(context);
-
 
     return Scaffold(
       body: Center(
-        child:SizedBox(
+        child: SizedBox(
           width: 320,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            StreamBuilder(
-              stream: Stream.periodic(const Duration(seconds: 1), (i) => DateTime.now()),
-              builder: (context, snapshot) {
-                return Text(
-                  snapshot.data != null ? DateFormat('yyyy-MM-dd hh:mm:ss').format(snapshot.data!) : 'Loading...',
-                  style: const TextStyle(fontSize: 24),
-                );
-              },
-            ),
-            SwitchListTile(
-              title: const Text('Startup'),
-              value: isStartupEnabled,
-              onChanged: (bool value) {
-                setState(() {
-                  isStartupEnabled = value;
-                });
-                savePreferences();
-              },
-            ),
-            SwitchListTile(
-              title: const Text('Event'),
-              value: isEventEnabled,
-              onChanged: (bool value) {
-                setState(() {
-                  isEventEnabled = value;
-                });
-                if (value) {
-                  appData.startTimer();
-                } else {
-                  appData.stopTimer();
-                }
-                savePreferences();
-              },
-            ),
-          ],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              StreamBuilder(
+                stream: Stream.periodic(
+                    const Duration(seconds: 1), (i) => DateTime.now()),
+                builder: (context, snapshot) {
+                  return Text(
+                    snapshot.data != null
+                        ? DateFormat('yyyy-MM-dd hh:mm:ss')
+                            .format(snapshot.data!)
+                        : 'Loading...',
+                    style: const TextStyle(fontSize: 24),
+                  );
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Startup'),
+                value: isStartupEnabled,
+                onChanged: (bool value) {
+                  setState(() {
+                    isStartupEnabled = value;
+                  });
+                  savePreferences();
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Event'),
+                value: isEventEnabled,
+                onChanged: (bool value) {
+                  setState(() {
+                    isEventEnabled = value;
+                  });
+                  if (value) {
+                    appData.startTimer();
+                  } else {
+                    appData.stopTimer();
+                  }
+                  savePreferences();
+                },
+              ),
+              Column(
+                children: [
+                  Text('version: $_version'),
+                  Text('buildNumber: $_buildNumber'),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }

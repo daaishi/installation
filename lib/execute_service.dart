@@ -11,6 +11,13 @@ class ExecuteService {
       var pjLinkService = PJLinkService(commandString: data.command);
       pjLinkService.executeCommand();
     } else if (data.type == 'system') {
+      logger.i('System command: ${data.command}');
+      if (data.command == 'restart') {
+        WindowsService.restart();
+      }
+      else if (data.command == 'shutdown') {
+        WindowsService.shutdown();
+      }
     } else if (data.type == 'app') {
       WindowsService.appControl(data.command);
     } else if (data.type == 'osc') {
