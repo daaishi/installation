@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:installation/event_data.dart';
+import 'package:installation/execute_service.dart';
 import 'package:installation/startup_data.dart';
 import 'package:logger/logger.dart';
 
@@ -39,7 +40,8 @@ class AppData extends ChangeNotifier {
 
       if (now.isAfter(eventTimeToday) && (event.lastExecuted == null || event.lastExecuted!.day != now.day)) {
         // TODO: execute command
-        logger.e('${event.time} executed: ${event.command}');
+        ExecuteService.executeEventCommand(event);
+        logger.d('${event.time} executed: ${event.command}');
         event.lastExecuted = now;
         notifyListeners(); // リスナーに通知
       }

@@ -43,7 +43,7 @@ class WindowsService {
       var shell = Shell();
       try {
         await shell.run('''
-          taskkill /im $exeName
+          taskkill /im $exeName /F
           ''');
       } catch (e) {
         print(e);
