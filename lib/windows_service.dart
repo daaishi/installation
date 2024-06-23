@@ -35,9 +35,9 @@ class WindowsService {
       try {
         var shell = Shell();
         var result = await shell.run(commandPowerShell);
-        print(result.outText);
+        logger.d('result: $result');
       } catch (e) {
-        print(e);
+        logger.e(e);
       }
     } else if (arg == 'kill') {
       var shell = Shell();
@@ -46,7 +46,19 @@ class WindowsService {
           taskkill /im $exeName /F
           ''');
       } catch (e) {
-        print(e);
+        logger.e(e);
+      }
+    } else if (arg == 'start') {
+      var shell = Shell();
+      try {
+        await shell.run(
+          '''
+            cmd /c start "" "$path"
+          '''
+        );
+      }
+      catch (e) {
+        logger.e('Error: $e');
       }
     }
   }

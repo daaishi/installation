@@ -34,8 +34,8 @@ class _AddEventDataDialogState extends State<AddEventDataDialog> {
     _time = DateTime.now().toLocal().toString().substring(11, 19);
   }
 
-  Future<void> _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['exe']);
+  Future<void> _pickFile(List<String> allowedExtensions) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: allowedExtensions);
     if (result != null) {
       String? filePath = result.files.single.path;
       if (filePath != null) {
@@ -49,27 +49,38 @@ class _AddEventDataDialogState extends State<AddEventDataDialog> {
   Widget _buildCommandInput() {
   if (selectedType == 'app') {
     // 'app'の場合、ファイルピッカーを表示
+    String filePickerMessage = "Select a file";
+    List<String> allowedExtensions = ['exe'];
+    if (selectedAppCommand == 'start') {
+      filePickerMessage = "Select a file";
+      allowedExtensions = ['*'];
+    }
+    else {
+      filePickerMessage = "Only support .exe file";
+      allowedExtensions = ['exe'];
+    }
     return Column(
       children: [
-        TextField(
-          controller: commandController,
-          decoration: InputDecoration(labelText: 'File(only .exe)'),
-          onTap: _pickFile,
-          readOnly: true, // ファイルピッカーを使用するため、直接編集は不可
-        ),
         DropdownButton<String>(
           value: selectedAppCommand, // コマンド用のコントローラーを流用
           onChanged: (String? newValue) {
             setState(() {
               selectedAppCommand = newValue;
+              commandController.text = "";
             });
           },
-          items: ['close', 'kill'].map<DropdownMenuItem<String>>((String value) {
+          items: ['close', 'kill', 'start'].map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
               child: Text(value),
             );
           }).toList(),
+        ),
+        TextField(
+          controller: commandController,
+          decoration: InputDecoration(labelText: filePickerMessage),
+          onTap: () => _pickFile(allowedExtensions),
+          readOnly: true, // ファイルピッカーを使用するため、直接編集は不可
         ),
       ],
     );
