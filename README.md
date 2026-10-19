@@ -21,6 +21,8 @@ This application is available for free, but we kindly request your support throu
 - [Dropbox](https://www.dropbox.com/scl/fo/4vc8pmjzeld585qjdhqri/AHD437LMMKjg882DcoTbxCM?rlkey=q8wm8fposizf7x1o0anbk0c52&st=vp9cwqj4&dl=0)
 - [Github](https://github.com/daaishi/installation/releases)
 
+From the same developer: Watchdog (free kiosk monitoring), RigNet, loopeek — https://dougu.dev/index.en
+
 ## Donation
 
 If you find this tool useful and would like to support its development, you can make a donation through the following channels:
